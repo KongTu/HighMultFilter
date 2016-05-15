@@ -160,6 +160,11 @@ public:
     virtual void endJob() ;
     virtual bool filter(edm::Event&, const edm::EventSetup&);
 private:
+
+
+    edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
+    edm::EDGetTokenT<edm::View<reco::Track> > trackSrc_;
+    
     double multMax_;
     double multMin_;
     double etaMax_;
@@ -167,8 +172,7 @@ private:
 
     bool doGenParticle_;
 
-    edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
-    edm::EDGetTokenT<edm::View<reco::Track> > trackSrc_;
+    
 };
 
 //
