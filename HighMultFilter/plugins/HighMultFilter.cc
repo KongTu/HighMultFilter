@@ -248,9 +248,9 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
           double dxyerror = sqrt(trk.d0Error()*trk.d0Error()+bestvxError*bestvyError);
    
           if(!trk.quality(reco::TrackBase::highPurity)) continue;
-          if(fabs(trk.ptError())/trk.pt() > offlineptErr_ ) continue;
-          if(fabs(dzvtx/dzerror) > offlineDCA_) continue;
-          if(fabs(dxyvtx/dxyerror) > offlineDCA_) continue;
+          if(fabs(trk.ptError())/trk.pt() > 0.1 ) continue;
+          if(fabs(dzvtx/dzerror) > 3.0) continue;
+          if(fabs(dxyvtx/dxyerror) > 3.0) continue;
           if(fabs(trk.eta()) < 2.4 && trk.pt() > 0.4 ){nMult_ass_good++;}// NtrkOffline        
 
       } 
