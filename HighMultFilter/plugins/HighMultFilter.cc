@@ -166,6 +166,9 @@ private:
     double etaMin_;
 
     bool doGenParticle_;
+
+    edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
+    edm::EDGetTokenT<edm::View<reco::Track> > trackSrc_;
 };
 
 //
@@ -180,6 +183,8 @@ private:
 // constructors and destructor
 //
 HighMultFilter::HighMultFilter(const edm::ParameterSet& iConfig) :
+vertexSrc_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexSrc"))),
+trackSrc_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("trackSrc"))),
 multMax_(iConfig.getParameter<double>("multMax")),
 multMin_(iConfig.getParameter<double>("multMin")),
 etaMax_(iConfig.getParameter<double>("etaMax")),
@@ -205,28 +210,28 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if( doGenParticle_ ){
 
-    edm::Handle<reco::GenParticleCollection> genpars;
-    iEvent.getByToken("genParticles",genpars);
+    // edm::Handle<reco::GenParticleCollection> genpars;
+    // iEvent.getByToken("genParticles",genpars);
     
-    for(unsigned it=0; it<genpars->size(); ++it){
+    // for(unsigned it=0; it<genpars->size(); ++it){
         
-        const reco::GenParticle & trk = (*genpars)[it];
+    //     const reco::GenParticle & trk = (*genpars)[it];
         
-        double eta = trk.eta();
-        if(eta>etaMax_ || eta<etaMin_) continue;
-        double pt  = trk.pt();
-        if(pt<=0.4) continue;
-        if(trk.status()!=1) continue;
-        if(fabs(trk.charge())!=1) continue;
+    //     double eta = trk.eta();
+    //     if(eta>etaMax_ || eta<etaMin_) continue;
+    //     double pt  = trk.pt();
+    //     if(pt<=0.4) continue;
+    //     if(trk.status()!=1) continue;
+    //     if(fabs(trk.charge())!=1) continue;
         
-        nMult_ass_good++;
-    }
+    //     nMult_ass_good++;
+    // }
 
     }
     else{
 
     edm::Handle<reco::VertexCollection> vertices;
-    iEvent.getByToken("offlinePrimaryVertices",vertices);
+    iEvent.getByToken(vertexSrc_,vertices);
     double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
     double bestvzError=-999.9, bestvxError=-999.9, bestvyError=-999.9;
     const reco::Vertex & vtx = (*vertices)[0];
@@ -234,7 +239,7 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
 
     Handle<reco::TrackCollection> tracks;
-    iEvent.getByToken("generalTracks", tracks);
+    iEvent.getByToken(trackSrc_, tracks);
 
       for(unsigned it = 0; it < tracks->size(); it++){
 
