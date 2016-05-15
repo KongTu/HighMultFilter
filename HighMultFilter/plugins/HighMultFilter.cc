@@ -214,22 +214,22 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     if( doGenParticle_ ){
 
-    // edm::Handle<reco::GenParticleCollection> genpars;
-    // iEvent.getByToken("genParticles",genpars);
+    edm::Handle<reco::GenParticleCollection> genpars;
+    iEvent.getByToken("genParticles",genpars);
     
-    // for(unsigned it=0; it<genpars->size(); ++it){
+    for(unsigned it=0; it<genpars->size(); ++it){
         
-    //     const reco::GenParticle & trk = (*genpars)[it];
+        const reco::GenParticle & trk = (*genpars)[it];
         
-    //     double eta = trk.eta();
-    //     if(eta>etaMax_ || eta<etaMin_) continue;
-    //     double pt  = trk.pt();
-    //     if(pt<=0.4) continue;
-    //     if(trk.status()!=1) continue;
-    //     if(fabs(trk.charge())!=1) continue;
+        double eta = trk.eta();
+        if(eta>etaMax_ || eta<etaMin_) continue;
+        double pt  = trk.pt();
+        if(pt<=0.4) continue;
+        if(trk.status()!=1) continue;
+        if(fabs(trk.charge())!=1) continue;
         
-    //     nMult_ass_good++;
-    // }
+        nMult_ass_good++;
+    }
 
     }
     else{
