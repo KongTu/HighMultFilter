@@ -161,7 +161,7 @@ public:
     virtual bool filter(edm::Event&, const edm::EventSetup&);
 private:
 
-
+    edm::EDGetTokenT<reco::GenParticleCollection> genSrc_;
     edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
     edm::EDGetTokenT<edm::View<reco::Track> > trackSrc_;
     
@@ -187,6 +187,7 @@ private:
 // constructors and destructor
 //
 HighMultFilter::HighMultFilter(const edm::ParameterSet& iConfig) :
+genSrc_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genSrc"))),
 vertexSrc_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexSrc"))),
 trackSrc_(consumes<edm::View<reco::Track> >(iConfig.getParameter<edm::InputTag>("trackSrc"))),
 multMax_(iConfig.getParameter<double>("multMax")),
@@ -215,7 +216,7 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( doGenParticle_ ){
 
     edm::Handle<reco::GenParticleCollection> genpars;
-    iEvent.getByToken("genParticles",genpars);
+    iEvent.getByToken(genSrc_,genpars);
     
     for(unsigned it=0; it<genpars->size(); ++it){
         
