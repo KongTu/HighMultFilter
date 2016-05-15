@@ -19,15 +19,141 @@
 
 // system include files
 #include <memory>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <math.h>
+#include <map>
+#include <sstream>
+
+
+#include <TMath.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TH3D.h>
+#include <TNtuple.h>
+#include <TFile.h>
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TString.h>
+#include <TCanvas.h>
+#include <TVector3.h>
+#include <TRandom.h>
+#include <TNtuple.h>
+#include <TGraph.h>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/one/EDAnalyzer.h"
-
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/PFJetCollection.h"
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "DataFormats/RecoCandidate/interface/RecoCandidate.h"
+
+#include "DataFormats/Candidate/interface/Candidate.h"
+
+#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
+#include "DataFormats/Candidate/interface/VertexCompositeCandidateFwd.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+#include "DataFormats/TrackReco/interface/DeDxData.h"
+
+#include <Math/Functions.h>
+#include <Math/SVector.h>
+#include <Math/SMatrix.h>
+
+//////////////////////////////////////////////
+// CMSSW user include files
+#include "DataFormats/Common/interface/DetSetAlgorithm.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/SiPixelDetId/interface/PXBDetId.h"
+#include "DataFormats/SiPixelDetId/interface/PXFDetId.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
+
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerLayerIdAccessor.h"
+
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertex.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimDataFormats/TrackingHit/interface/PSimHit.h"
+#include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
+#include "SimTracker/TrackerHitAssociation/interface/TrackerHitAssociator.h"
+
+#include "DataFormats/SiPixelDetId/interface/PixelEndcapName.h"
+
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutSetup.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMapRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerObjectMap.h"
+
+#include "L1Trigger/GlobalTrigger/interface/L1GlobalTrigger.h"
+
+#include "DataFormats/Math/interface/Point3D.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingParticleFwd.h"
+#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
+#include "DataFormats/RecoCandidate/interface/TrackAssociation.h"
+#include "SimTracker/TrackAssociation/interface/TrackAssociatorByHits.h"
+#include "DataFormats/TrackReco/interface/DeDxData.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+// Heavyion
+#include "DataFormats/HeavyIonEvent/interface/Centrality.h"
+#include "RecoHI/HiCentralityAlgos/interface/CentralityProvider.h"
+
+// Particle Flow
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
+#include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
+#include "DataFormats/ParticleFlowReco/interface/PFClusterFwd.h"
+
+// Vertex significance
+#include "RecoBTag/SecondaryVertex/interface/SecondaryVertex.h"
+
+// Root include files
+#include "TTree.h"
+//
+// Track Matching and fake rate calculations     
+//#include "RiceHIG/V0Analysis/interface/V0Validator.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 //
 // class declaration
 //
@@ -38,20 +164,19 @@
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-class HighMultFilter : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
-   public:
-      explicit HighMultFilter(const edm::ParameterSet&);
-      ~HighMultFilter();
+class HighMultFilter : public edm::EDFilter {
+public:
+    explicit HighMultFilter(const edm::ParameterSet&);
+    ~HighMultFilter();
+    virtual void endJob() ;
+    virtual bool filter(edm::Event&, const edm::EventSetup&);
+private:
+    double multMax_;
+    double multMin_;
+    double etaMax_;
+    double etaMin_;
 
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
-
-   private:
-      virtual void beginJob() override;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-      virtual void endJob() override;
-
-      // ----------member data ---------------------------
+    bool doGenParticle_;
 };
 
 //
@@ -65,69 +190,89 @@ class HighMultFilter : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //
 // constructors and destructor
 //
-HighMultFilter::HighMultFilter(const edm::ParameterSet& iConfig)
-
+HighMultFilter::HighMultFilter(const edm::ParameterSet& iConfig) :
+multMax_(iConfig.getParameter<double>("multMax")),
+multMin_(iConfig.getParameter<double>("multMin")),
+etaMax_(iConfig.getParameter<double>("etaMax")),
+etaMin_(iConfig.getParameter<double>("etaMin")),
+doGenParticle_(iConfig.getParameter<bool>("doGenParticle"))
 {
-   //now do what ever initialization is needed
-   usesResource("TFileService");
-
+    
 }
 
 
 HighMultFilter::~HighMultFilter()
 {
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
 
 }
 
-
-//
-// member functions
-//
-
-// ------------ method called for each event  ------------
-void
-HighMultFilter::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+bool
+HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
+    using namespace edm;
+    bool accepted = false;
 
+    double nMult_ass_good = 0;
 
+    if( doGenParticle_ ){
 
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
-#endif
+    edm::Handle<reco::GenParticleCollection> genpars;
+    iEvent.getByLabel("genParticles",genpars);
+    
+    for(unsigned it=0; it<genpars->size(); ++it){
+        
+        const reco::GenParticle & trk = (*genpars)[it];
+        
+        double eta = trk.eta();
+        if(eta>etaMax_ || eta<etaMin_) continue;
+        double pt  = trk.pt();
+        if(pt<=0.4) continue;
+        if(trk.status()!=1) continue;
+        if(fabs(trk.charge())!=1) continue;
+        
+        nMult_ass_good++;
+    }
+
+    }
+    else{
+
+    edm::Handle<reco::VertexCollection> vertices;
+    iEvent.getByLabel("offlinePrimaryVertices",vertices);
+    double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
+    double bestvzError=-999.9, bestvxError=-999.9, bestvyError=-999.9;
+    const reco::Vertex & vtx = (*vertices)[0];
+    bestvz = vtx.z(); bestvx = vtx.x(); bestvy = vtx.y();
+    bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
+
+    Handle<reco::TrackCollection> tracks;
+    iEvent.getByLabel("generalTracks", tracks);
+
+      for(unsigned it = 0; it < tracks->size(); it++){
+
+       const reco::Track & trk = (*tracks)[it];
+
+       math::XYZPoint bestvtx(bestvx,bestvy,bestvz);
+          
+          double dzvtx = trk.dz(bestvtx);
+          double dxyvtx = trk.dxy(bestvtx);
+          double dzerror = sqrt(trk.dzError()*trk.dzError()+bestvzError*bestvzError);
+          double dxyerror = sqrt(trk.d0Error()*trk.d0Error()+bestvxError*bestvyError);
    
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
-#endif
+          if(!trk.quality(reco::TrackBase::highPurity)) continue;
+          if(fabs(trk.ptError())/trk.pt() > offlineptErr_ ) continue;
+          if(fabs(dzvtx/dzerror) > offlineDCA_) continue;
+          if(fabs(dxyvtx/dxyerror) > offlineDCA_) continue;
+          if(fabs(trk.eta()) < 2.4 && trk.pt() > 0.4 ){nMult_ass_good++;}// NtrkOffline        
+
+      } 
+    }
+    
+    if(nMult_ass_good>=multMin_ && nMult_ass_good<multMax_) accepted = true;
+    
+    return accepted;
 }
-
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-HighMultFilter::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-HighMultFilter::endJob() 
-{
-}
-
-// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-HighMultFilter::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-  //The following says we do not know what parameters are allowed so do no validation
-  // Please change this to state exactly what you do use, even if it is no parameters
-  edm::ParameterSetDescription desc;
-  desc.setUnknown();
-  descriptions.addDefault(desc);
+HighMultFilter::endJob()
+{
 }
-
-//define this as a plug-in
 DEFINE_FWK_MODULE(HighMultFilter);
