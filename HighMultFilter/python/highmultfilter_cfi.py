@@ -4,5 +4,8 @@ highMultFilter = cms.EDFilter('HighMultFilter',
                                   multMin = cms.double(120),
                                   etaMax = cms.double(2.4),
                                   etaMin = cms.double(-2.4),
-                                  doGenParticle = cms.bool(False)
+                                  doGenParticle = cms.bool(False),
+                                  genSrc = cms.InputTag("genParticles"),
+                                  vertexSrc = cms.InputTag("offlinePrimaryVertices"),
+                                  trackSrc = cms.InputTag("generalTracks")
                                   )
