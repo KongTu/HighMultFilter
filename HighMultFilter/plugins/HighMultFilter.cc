@@ -206,7 +206,7 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( doGenParticle_ ){
 
     edm::Handle<reco::GenParticleCollection> genpars;
-    iEvent.getByLabel("genParticles",genpars);
+    iEvent.getByToken("genParticles",genpars);
     
     for(unsigned it=0; it<genpars->size(); ++it){
         
@@ -226,7 +226,7 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     else{
 
     edm::Handle<reco::VertexCollection> vertices;
-    iEvent.getByLabel("offlinePrimaryVertices",vertices);
+    iEvent.getByToken("offlinePrimaryVertices",vertices);
     double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
     double bestvzError=-999.9, bestvxError=-999.9, bestvyError=-999.9;
     const reco::Vertex & vtx = (*vertices)[0];
@@ -234,7 +234,7 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
 
     Handle<reco::TrackCollection> tracks;
-    iEvent.getByLabel("generalTracks", tracks);
+    iEvent.getByToken("generalTracks", tracks);
 
       for(unsigned it = 0; it < tracks->size(); it++){
 
