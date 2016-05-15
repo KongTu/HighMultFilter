@@ -243,7 +243,7 @@ HighMultFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bestvz = vtx.z(); bestvx = vtx.x(); bestvy = vtx.y();
     bestvzError = vtx.zError(); bestvxError = vtx.xError(); bestvyError = vtx.yError();
 
-    Handle<reco::TrackCollection> tracks;
+    Handle<edm::View<reco::Track>> tracks;
     iEvent.getByToken(trackSrc_, tracks);
 
       for(unsigned it = 0; it < tracks->size(); it++){
